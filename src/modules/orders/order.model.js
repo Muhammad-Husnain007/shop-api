@@ -10,7 +10,7 @@ const orderItemSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
   user: { type: mongoose.SchemaTypes.ObjectId, ref: 'User', required: true, index: true },
-  checkout: { type: mongoose.Schema.Types.ObjectId, ref: 'Checkout', required: true },
+  checkout: { type: mongoose.Schema.Types.ObjectId, ref: 'Checkout', required: true, unique: true },
   items: { type: [orderItemSchema], required: true },
   address: { type: Object, required: true },
   subtotal: { type: Number, required: true },

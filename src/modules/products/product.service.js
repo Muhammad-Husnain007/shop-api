@@ -37,14 +37,14 @@ export async function listProducts(query) {
   return paginated(items, total, { page, limit });
 }
 
-export async function getProduct(id) {
+export async function getProduct(id, { activeOnly = true } = {}) {
   const product = await Product.findById(id).populate('category', 'name slug');
-  if (!product) throw ApiError.notFound('Product not found');
+  if (!product || (activeOnly && !product.isActive)) throw ApiError.notFound('Product not found');
   return product;
 }
 
 export async function updateProduct(id, payload) {
-  const product = await getProduct(id);
+  const product = await getProduct(id, { activeOnly: false });
   if (payload.category) await assertCategory(payload.category);
   if (payload.title && payload.title !== product.title) product.slug = makeSlug(payload.title);
   if (payload.sku) payload.sku = payload.sku.toUpperCase();
@@ -53,7 +53,7 @@ export async function updateProduct(id, payload) {
 }
 
 export async function deleteProduct(id) {
-  const product = await getProduct(id);
+  const product = await getProduct(id, { activeOnly: false });
   await product.deleteOne();
   return { id };
 }

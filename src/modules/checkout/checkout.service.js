@@ -87,12 +87,13 @@ export async function confirmCheckout(id, user, paymentRef) {
     checkout.status = 'paid';
     checkout.paymentRef = order.paymentRef;
     checkout.order = order.id;
-    await checkout.save({ session })
+    await checkout.save({ session });
     await session.commitTransaction();
     await clearCart(user.id);
     return { checkout, order };
   } catch (error) {
     if (session.inTransaction()) await session.abortTransaction();
+    if (error?.code === 11000) throw ApiError.conflict('Checkout already paid');
     throw error;
   } finally {
     session.endSession();

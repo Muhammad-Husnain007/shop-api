@@ -32,7 +32,8 @@ export async function updateCartItem(userId, productId, quantity) {
   const item = cart.items.find((entry) => String(entry.product._id || entry.product) === productId);
   if (!item) throw ApiError.notFound('Item not in cart');
   const product = await Product.findById(productId);
-  if (!product || product.stock < quantity) throw ApiError.badRequest('Not enough stock');
+  if (!product || !product.isActive) throw ApiError.notFound('Product not found');
+  if (product.stock < quantity) throw ApiError.badRequest('Not enough stock');
   item.quantity = quantity;
   item.unitPrice = product.price;
   await cart.save();

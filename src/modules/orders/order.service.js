@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { ApiError } from '../../utils/ApiError.js';
 import { paginated, parsePagination } from '../../utils/pagination.js';
 import { Product } from '../products/product.model.js';
@@ -33,9 +34,30 @@ export async function cancelOrder(id, user) {
   if (!['placed', 'paid'].includes(order.status)) {
     throw ApiError.badRequest('Order can no longer be cancelled');
   }
-  for (const item of order.items) {
-    await Product.updateOne({ _id: item.product }, { $inc: { stock: item.quantity } });
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const claimed = await Order.findOneAndUpdate(
+      { _id: order.id, status: { $in: ['placed', 'paid'] } },
+      { $set: { status: 'cancelled' } },
+      { new: true, session },
+    );
+    if (!claimed) throw ApiError.badRequest('Order can no longer be cancelled');
+
+    for (const item of claimed.items) {
+      await Product.updateOne(
+        { _id: item.product },
+        { $inc: { stock: item.quantity } },
+        { session },
+      );
+    }
+    await session.commitTransaction();
+    return claimed;
+  } catch (error) {
+    if (session.inTransaction()) await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-  order.status = 'cancelled';
-  return order.save();
 }
