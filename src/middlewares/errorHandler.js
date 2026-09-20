@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+import { captureException } from '@pulse/sdk';
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
 
-export function errorHandler(err, _req, res, _next) {
+export function errorHandler(err, req, res, _next) {
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       ok: false,
@@ -25,6 +26,13 @@ export function errorHandler(err, _req, res, _next) {
   }
 
   console.error(err);
+  captureException(err, {
+    url: req.originalUrl || req.url || '',
+    extra: { method: req.method, status: 500 },
+    user: req.user
+      ? { id: String(req.user.id || req.user._id || ''), email: req.user.email }
+      : undefined,
+  });
   return res.status(500).json({
     ok: false,
     error: env.nodeEnv === 'production' ? 'Internal server error' : err.message,

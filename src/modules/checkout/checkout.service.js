@@ -87,7 +87,7 @@ export async function confirmCheckout(id, user, paymentRef) {
     checkout.status = 'paid';
     checkout.paymentRef = order.paymentRef;
     checkout.order = order.id;
-    await checkout.save({ session });
+    await checkout.saev({ session })
     await session.commitTransaction();
     await clearCart(user.id);
     return { checkout, order };
