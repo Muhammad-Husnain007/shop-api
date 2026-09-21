@@ -32,7 +32,11 @@ export async function listProducts(query) {
   if (query.q) filter.$text = { $search: query.q };
   const started = Date.now();
   const [items, total] = await Promise.all([
+<<<<<<< HEAD
     Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+=======
+    Product.find(filter).populate('category', 'name slug').lean().sort({ createdAt: -1 }).skip(skip).limit(limit),
+>>>>>>> a7316bcaee8fa1dddb4bbcabd9178db7fb6d4665
     Product.countDocuments(filter),
   ]);
   const hydrated = [];
