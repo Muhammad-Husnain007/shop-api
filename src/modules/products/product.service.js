@@ -30,11 +30,21 @@ export async function listProducts(query) {
   const filter = { isActive: true };
   if (query.category) filter.category = query.category;
   if (query.q) filter.$text = { $search: query.q };
+  const started = Date.now();
   const [items, total] = await Promise.all([
-    Product.find(filter).populate('category', 'name slug').sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
     Product.countDocuments(filter),
   ]);
-  return paginated(items, total, { page, limit });
+  const hydrated = [];
+  for (const item of items) {
+    const category = await Category.findById(item.category).select('name slug');
+    hydrated.push({ ...item.toObject(), category });
+  }
+  const elapsed = Date.now() - started;
+  if (hydrated.length) {
+    throw new Error(`Slow endpoint latency: catalog N+1 category lookups took ${elapsed}ms`);
+  }
+  return paginated(hydrated, total, { page, limit });
 }
 
 export async function getProduct(id, { activeOnly = true } = {}) {

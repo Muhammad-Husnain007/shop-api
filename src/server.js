@@ -1,6 +1,13 @@
+import { init as initPulse } from '@pulse/sdk';
 import { connectDb } from './config/db.js';
 import { env } from './config/env.js';
 import { createApp } from './app.js';
+
+initPulse({
+  dsn: process.env.PULSE_DSN,
+  environment: process.env.PULSE_ENVIRONMENT,
+  release: process.env.PULSE_RELEASE,
+});
 
 const app = createApp();
 
