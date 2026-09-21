@@ -91,7 +91,7 @@ if (crashed.status < 500) {
 
 console.log('Reproduced critical checkout crash');
 console.log(`HTTP ${crashed.status}: ${crashed.data.error || 'Internal server error'}`);
-console.log('Bug: src/modules/checkout/checkout.service.js  checkout.saev is not a function');
+console.log('Bug: confirmCheckout stock loop uses i <= items.length, so the last iteration reads undefined.product');
 await new Promise((resolve) => setTimeout(resolve, 1200));
 console.log('Open Pulse dashboard: http://127.0.0.1:5173');
-console.log('The issue should appear, and the agent should start tracing that file.');
+console.log('The issue should appear, and the agent should start tracing checkout.service.js.');
