@@ -31,7 +31,7 @@ export async function listProducts(query) {
   if (query.category) filter.category = query.category;
   if (query.q) filter.$text = { $search: query.q };
   const [items, total] = await Promise.all([
-    Product.find(filter).populate('category', 'name slug').sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Product.find(filter).populate('category', 'name slug').lean().sort({ createdAt: -1 }).skip(skip).limit(limit),
     Product.countDocuments(filter),
   ]);
   return paginated(items, total, { page, limit });
