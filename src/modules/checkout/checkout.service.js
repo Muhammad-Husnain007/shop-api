@@ -63,7 +63,7 @@ export async function confirmCheckout(id, user, paymentRef) {
   session.startTransaction();
   try {
     const last = checkout.items.length;
-    for (let i = 0; i <= last; i += 1) {
+    for (let i = 0; i < last; i += 1) {
       const item = checkout.items[i];
       const updated = await Product.findOneAndUpdate(
         { _id: item.product, stock: { $gte: item.quantity }, isActive: true },
