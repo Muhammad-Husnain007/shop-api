@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { captureException } from '@pulse/sdk';
+import { userFromRequest } from '@pulse/sdk/express';
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
 
@@ -29,9 +30,7 @@ export function errorHandler(err, req, res, _next) {
   captureException(err, {
     url: req.originalUrl || req.url || '',
     extra: { method: req.method, status: 500 },
-    user: req.user
-      ? { id: String(req.user.id || req.user._id || ''), email: req.user.email }
-      : undefined,
+    user: userFromRequest(req),
   });
   return res.status(500).json({
     ok: false,

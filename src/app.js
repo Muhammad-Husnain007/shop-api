@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { hidePasswords } from './middlewares/hidePasswords.js';
 import { notFound } from './middlewares/notFound.js';
 import { apiRouter } from './routes/index.js';
 
@@ -15,6 +16,7 @@ export function createApp() {
   app.use(helmet());
   app.use(cors({ origin: env.corsOrigin === '*' ? true : env.corsOrigin.split(','), credentials: true }));
   app.use(express.json({ limit: '1mb' }));
+  app.use(hidePasswords);
   app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
   app.use(rateLimit({ windowMs: 60_000, max: 180, standardHeaders: true, legacyHeaders: false }));
 

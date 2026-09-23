@@ -16,6 +16,7 @@
     "test:checkout": "node src/test/checkout.js",
     "test:orders": "node src/test/orders.js",
     "test:pulse-crash": "node src/test/reproduce-pulse-crash.js",
+    "test:race": "node src/test/reproduce-race.js",
     "test:nplus1": "node src/test/reproduce-nplus1.js",
     "test:data": "node src/test/auth.js && node src/test/categories.js && node src/test/products.js && node src/test/cart.js && node src/test/checkout.js && node src/test/orders.js"
   },

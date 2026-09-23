@@ -17,18 +17,16 @@ Express + MongoDB commerce backend.
 
 ```bash
 cd shop-api
-copy .env.example .env
 npm install
 npm run seed
-npm run dev
+npm start
 ```
 
-Needs MongoDB and Pulse running if you want error tracking.
+Use `.env` for Mongo, JWT, and the production Pulse DSN.
 
-- Health: http://127.0.0.1:4000/health
-- Seed admin: `admin@shop.local` / `Admin123!`
+Needs MongoDB and a production Pulse DSN if you want error tracking.
 
-Pulse client: set `PULSE_DSN`, `PULSE_NOTIFY_EMAIL`, `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH`, and `ISENABLEDSENDEMAIL` in `.env`. On start the SDK registers those with Pulse. The start script already preloads `@pulse/sdk/register`.
+Pulse client: set `PULSE_DSN` (your Pulse host ingest URL), `PULSE_NOTIFY_EMAIL`, `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH`, and `ISENABLEDSENDEMAIL` in `.env`. On start the SDK registers those with Pulse. The start script already preloads `@pulse/sdk/register`.
 
 ## Auth header
 

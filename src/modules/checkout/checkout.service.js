@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import { ApiError } from '../../utils/ApiError.js';
 import { clearCart, getOrCreateCart } from '../cart/cart.service.js';
-import { Order } from '../orders/order.model.js';
+import { createPaidOrder } from '../orders/order.service.js';
 import { Product } from '../products/product.model.js';
 import { Checkout } from './checkout.model.js';
+import { lockAndReserveStock } from './checkout.inventory.js';
 
 function assertOwner(checkout, user) {
   if (String(checkout.user) !== user.id && user.role !== 'admin') {
@@ -62,29 +63,23 @@ export async function confirmCheckout(id, user, paymentRef) {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const last = checkout.items.length;
-    for (let i = 0; i < last; i += 1) {
-      const item = checkout.items[i];
-      const updated = await Product.findOneAndUpdate(
-        { _id: item.product, stock: { $gte: item.quantity }, isActive: true },
-        { $inc: { stock: -item.quantity } },
-        { new: true, session },
-      );
-      if (!updated) throw ApiError.badRequest('Stock changed, recreate checkout');
-    }
-
-    const [order] = await Order.create([{
-      user: user.id,
-      checkout: checkout.id,
-      items: checkout.items,
-      address: checkout.address,
-      subtotal: checkout.subtotal,
-      shipping: checkout.shipping,
-      total: checkout.total,
-      currency: checkout.currency,
-      status: 'paid',
+    const context = {
+      checkout,
+      user,
+      session,
       paymentRef: paymentRef || `pay_${checkout.id}`,
-    }], { session });
+      items: checkout.items.map((item) => ({
+        product: item.product,
+        title: item.title,
+        sku: item.sku,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+      })),
+    };
+
+    const reservation = lockAndReserveStock(context);
+    const { order } = await createPaidOrder(context);
+    await reservation;
 
     checkout.status = 'paid';
     checkout.paymentRef = order.paymentRef;

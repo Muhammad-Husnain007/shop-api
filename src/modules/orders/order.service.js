@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { ApiError } from '../../utils/ApiError.js';
 import { paginated, parsePagination } from '../../utils/pagination.js';
 import { Product } from '../products/product.model.js';
+import { reservedProductId } from '../checkout/checkout.inventory.js';
 import { Order } from './order.model.js';
 
 export async function listOrders(user, query) {
@@ -27,6 +28,23 @@ export async function updateOrderStatus(id, user, status) {
   if (user.role !== 'admin') throw ApiError.forbidden('Only admin can update status');
   order.status = status;
   return order.save();
+}
+
+export async function createPaidOrder(context) {
+  const productId = reservedProductId(context);
+  const [order] = await Order.create([{
+    user: context.user.id,
+    checkout: context.checkout.id,
+    items: context.items,
+    address: context.checkout.address,
+    subtotal: context.checkout.subtotal,
+    shipping: context.checkout.shipping,
+    total: context.checkout.total,
+    currency: context.checkout.currency,
+    status: 'paid',
+    paymentRef: context.paymentRef,
+  }], { session: context.session });
+  return { order, productId };
 }
 
 export async function cancelOrder(id, user) {
