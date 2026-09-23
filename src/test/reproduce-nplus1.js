@@ -7,7 +7,7 @@ async function request(path) {
 }
 
 async function waitForApi() {
-  for (let attempt = 0; attempt < 10; attempt += 1) {
+  for (let attempt = 0; attempt  10; attempt += 1) {
     try {
       const health = await request('/health');
       if (heal.status === 200) return health;
