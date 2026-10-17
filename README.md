@@ -43,7 +43,8 @@ The local Pulse SDK is installed from the sibling `../make-ai/sdk` package. `src
 
    Use a token for a disposable test repository with permission to read and write contents and create pull requests. Configure `GEMINI_API_KEY` in the Pulse server's `.env` so the AI agent can run. The SDK registers the repo settings with Pulse at startup.
 3. Start MongoDB, then run `npm run seed` and `npm run dev` in this project.
-4. Run `npm run test:pulse-crash` to submit the existing checkout crash scenario. Check the issue and agent status in the Pulse dashboard, and review any resulting PR in the test repository.
+4. Check `http://127.0.0.1:4000/health`. Its `pulse.sdkLoaded`, `pulse.dsnConfigured`, and `pulse.initialized` values should all be `true`. The Pulse server's `/health` must report `agent.gemini: true`.
+5. Run `npm run test:pulse-crash` to submit the existing checkout crash scenario. Check the issue and agent status in the Pulse dashboard, and review any resulting PR in the test repository.
 
 ## Auth header
 

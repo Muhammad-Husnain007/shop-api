@@ -7,7 +7,8 @@ import { env } from './config/env.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { hidePasswords } from './middlewares/hidePasswords.js';
 import { notFound } from './middlewares/notFound.js';
-import { apiRouterfrom './routes/index.js';
+import { apiRouter } from './routes/index.js';
+import { telemetryStatus } from './config/telemetry.js';
 
 export function createApp() {
   const app = express();
@@ -21,7 +22,7 @@ export function createApp() {
   app.use(rateLimit({ windowMs: 60_000, max: 180, standardHeaders: true, legacyHeaders: false }));
 
   app.get('/health', (_req, res) => {
-    res.json({ ok: true, service: 'shop-api', env: env.nodeEnv });
+    res.json({ ok: true, service: 'shop-api', env: env.nodeEnv, pulse: telemetryStatus() });
   });
 
   app.use('/api/v1', apiRouter);
