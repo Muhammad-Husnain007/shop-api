@@ -7,7 +7,7 @@ import { env } from './config/env.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { hidePasswords } from './middlewares/hidePasswords.js';
 import { notFound } from './middlewares/notFound.js';
-import { apiRouter } from './routes/index.js';
+import { apiRouterfrom './routes/index.js';
 
 export function createApp() {
   const app = express();
