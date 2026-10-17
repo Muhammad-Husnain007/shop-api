@@ -22,11 +22,28 @@ npm run seed
 npm start
 ```
 
-Use `.env` for Mongo, JWT, and the production Pulse DSN.
+Use `.env` for Mongo, JWT, and the Pulse DSN.
 
-Needs MongoDB and a production Pulse DSN if you want error tracking.
+The local Pulse SDK is installed from the sibling `../make-ai/sdk` package. `src/config/telemetry.js` initializes it on startup, and the Express error handler reports unexpected 500 errors with request context.
 
-Pulse client: set `PULSE_DSN` (your Pulse host ingest URL), `PULSE_NOTIFY_EMAIL`, `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH`, and `ISENABLEDSENDEMAIL` in `.env`. On start the SDK registers those with Pulse. The start script already preloads `@pulse/sdk/register`.
+## Test Pulse locally
+
+1. Start the Pulse project from `../make-ai` with `npm run dev`, then create a project in its dashboard and copy the project DSN.
+2. In this app's `.env`, set the DSN and a GitHub test repository:
+
+   ```env
+   PULSE_DSN=http://127.0.0.1:8787/ingest/YOUR_PROJECT_KEY
+   PULSE_ENVIRONMENT=local
+   PULSE_RELEASE=shop-api-local
+   GITHUB_TOKEN=YOUR_TEST_REPO_TOKEN
+   GITHUB_REPO=owner/test-repo
+   GITHUB_BASE_BRANCH=main
+   ISENABLEDSENDEMAIL=false
+   ```
+
+   Use a token for a disposable test repository with permission to read and write contents and create pull requests. Configure `GEMINI_API_KEY` in the Pulse server's `.env` so the AI agent can run. The SDK registers the repo settings with Pulse at startup.
+3. Start MongoDB, then run `npm run seed` and `npm run dev` in this project.
+4. Run `npm run test:pulse-crash` to submit the existing checkout crash scenario. Check the issue and agent status in the Pulse dashboard, and review any resulting PR in the test repository.
 
 ## Auth header
 
