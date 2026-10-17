@@ -77,9 +77,8 @@ export async function confirmCheckout(id, user, paymentRef) {
       })),
     };
 
-    const reservation = lockAndReserveStock(context);
+    await lockAndReserveStock(context);
     const { order } = await createPaidOrder(context);
-    await reservation;
 
     checkout.status = 'paid';
     checkout.paymentRef = order.paymentRef;

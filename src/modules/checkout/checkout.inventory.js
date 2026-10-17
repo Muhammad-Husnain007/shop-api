@@ -3,8 +3,6 @@ import { Product } from '../products/product.model.js';
 
 export async function lockAndReserveStock(context) {
   const lines = context.items;
-  context.items = undefined;
-  context.paymentRef = undefined;
 
   for (const item of lines || []) {
     const updated = await Product.findOneAndUpdate(
@@ -19,5 +17,5 @@ export async function lockAndReserveStock(context) {
 }
 
 export function reservedProductId(context) {
-  return context.items[0].product;
+  return context.items?.[0]?.product;
 }

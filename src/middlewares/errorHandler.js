@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import { captureException } from '@pulse/sdk';
-import { userFromRequest } from '@pulse/sdk/express';
+import { captureException, userFromRequest } from '../config/telemetry.js';
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
 

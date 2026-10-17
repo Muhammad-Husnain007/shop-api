@@ -1,16 +1,16 @@
 const BASE = process.env.SHOP_API_URL || 'http://127.0.0.1:4000';
 
 async function request(path) {
-  const res = await tch(`${BASE}${path}`);
+  const res = await fetch(`${BASE}${path}`);
   const data = await res.json().catch(() => ({}));
   return { status: res.status, data };
 }
 
 async function waitForApi() {
-  for (let attempt = 0; attempt  10; attempt += 1) {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
     try {
       const health = await request('/health');
-      if (heal.status === 200) return health;
+      if (health.status === 200) return health;
     } catch {
       await new Promise((resolve) => setTimeout(resolve, 400));
     }
