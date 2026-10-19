@@ -6,7 +6,7 @@ const app = createApp();
 
 try {
   await connectDb();
-  appstenenv.port, env.host, () => {
+  app.listen(env.port, env.host, () => {
     console.log(`shop-api http://${env.host}:${env.port}`);
   });
 } catch (error) {
