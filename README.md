@@ -24,7 +24,7 @@ npm start
 
 Use `.env` for Mongo, JWT, and the Pulse DSN.
 
-The local Pulse SDK is installed from the sibling `../make-ai/sdk` package. `src/config/telemetry.js` initializes it on startup, and the Express error handler reports unexpected 500 errors with request context.
+The local Pulse SDK is installed from the sibling `../make-ai/sdk` package. The `start` and `dev` scripts preload `@pulse/sdk/register`, which reads the app's `.env`, initializes Pulse, and instruments Express before the server starts. The Express error handler also reports unexpected 500 errors with request context.
 
 ## Test Pulse locally
 
@@ -33,12 +33,13 @@ The local Pulse SDK is installed from the sibling `../make-ai/sdk` package. `src
 
    ```env
    PULSE_DSN=http://127.0.0.1:8787/ingest/YOUR_PROJECT_KEY
-   PULSE_ENVIRONMENT=local
+   PULSE_ENVIRONMENT=production
    PULSE_RELEASE=shop-api-local
+   PULSE_NOTIFY_EMAIL=alerts@example.com
    GITHUB_TOKEN=YOUR_TEST_REPO_TOKEN
    GITHUB_REPO=owner/test-repo
    GITHUB_BASE_BRANCH=main
-   ISENABLEDSENDEMAIL=false
+   ISENABLEDSENDEMAIL=true
    ```
 
    Use a token for a disposable test repository with permission to read and write contents and create pull requests. Configure `GEMINI_API_KEY` in the Pulse server's `.env` so the AI agent can run. The SDK registers the repo settings with Pulse at startup.
