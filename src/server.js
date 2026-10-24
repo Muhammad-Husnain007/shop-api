@@ -8,7 +8,7 @@ const start = async () => {
   try {
     await connectDb();
     app.listen(env.port, env.host, () => {
-      console.log(`shop-api http://${env.host}:${env.port}`);
+      console.log('shop-api http://' + env.host + ':' + env.port);
     });
   } catch (error) {
     console.error('Failed to start shop-api', error);
