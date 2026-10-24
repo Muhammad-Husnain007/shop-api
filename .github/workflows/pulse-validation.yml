@@ -1,0 +1,50 @@
+name: Pulse fix validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Check out shop-api
+        uses: actions/checkout@v4
+        with:
+          path: shop-api
+          persist-credentials: false
+      - name: Check out Pulse SDK
+        uses: actions/checkout@v4
+        with:
+          repository: Muhammad-Husnain007/make-ai
+          path: make-ai
+          token: ${{ secrets.PULSE_SDK_READ_TOKEN || github.token }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: shop-api/package-lock.json
+      - name: Install dependencies
+        working-directory: shop-api
+        run: npm ci
+      - name: Run shop-api data smoke suite
+        working-directory: shop-api
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017/shop-api-ci
+          JWT_SECRET: pulse-ci-test-secret
+          NODE_ENV: test
+        run: npm run test:data

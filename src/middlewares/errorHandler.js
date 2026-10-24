@@ -26,11 +26,13 @@ export function errorHandler(err, req, res, _next) {
   }
 
   console.error(err);
-  captureException(err, {
-    url: req.originalUrl || req.url || '',
-    extra: { method: req.method, status: 500 },
-    user: userFromRequest(req),
-  });
+  if (!res.__pulseReported) {
+    captureException(err, {
+      url: req.originalUrl || req.url || '',
+      extra: { method: req.method, status: 500 },
+      user: userFromRequest(req),
+    });
+  }
   return res.status(500).json({
     ok: false,
     error: env.nodeEnv === 'production' ? 'Internal server error' : err.message,

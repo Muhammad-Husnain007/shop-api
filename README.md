@@ -42,10 +42,12 @@ The local Pulse SDK is installed from the sibling `../make-ai/sdk` package. The 
    ISENABLEDSENDEMAIL=true
    ```
 
-   Use a token for a disposable test repository with permission to read and write contents and create pull requests. Configure `GEMINI_API_KEY` in the Pulse server's `.env` so the AI agent can run. The SDK registers the repo settings with Pulse at startup.
+   Use a token for a disposable test repository with permission to read and write contents and create pull requests. Configure `AI_API_KEY` in the Pulse server's `.env` so the AI agent can run. The SDK registers the repo settings with Pulse at startup.
 3. Start MongoDB, then run `npm run seed` and `npm run dev` in this project.
 4. Check `http://127.0.0.1:4000/health`. Its `pulse.sdkLoaded`, `pulse.dsnConfigured`, and `pulse.initialized` values should all be `true`. The Pulse server's `/health` must report `agent.gemini: true`.
 5. Run `npm run test:pulse-crash` to submit the existing checkout crash scenario. Check the issue and agent status in the Pulse dashboard, and review any resulting PR in the test repository.
+
+Pulse opens a PR only after the `Pulse fix validation` GitHub Actions workflow passes on its candidate branch. Add `.github/workflows/pulse-validation.yml` to the connected repository's default branch and grant the project's fine-grained GitHub token Actions: Read and write, Contents: Read and write, and Pull requests: Read and write. If `make-ai` is private, add a repository secret named `PULSE_SDK_READ_TOKEN` with read access to it. The workflow uses an isolated MongoDB service and runs `npm run test:data`; it does not deploy or merge.
 
 ## Auth header
 
