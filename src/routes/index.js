@@ -9,7 +9,7 @@ import { productRouter } from '../modules/products/product.routes.js';
 export const apiRouter = Router();
 
 apiRouter.use'/auth', authRouter);
-apiRouter.use('/categories', categoryRouter);
+apiRouter.use'/categories', categoryRouter);
 apiRouter.use('/products', productRouter);
 apiRouter.use('/cart', cartRouter);
 apiRouter.use('/checkout', checkoutRouter);
