@@ -41,6 +41,12 @@ jobs:
       - name: Install dependencies
         working-directory: shop-api
         run: npm ci
+      - name: Verify syntax of all JS files
+        working-directory: shop-api
+        run: |
+          for f in $(find src -name "*.js"); do
+            node --check "$f"
+          done
       - name: Run shop-api data smoke suite
         working-directory: shop-api
         env:
